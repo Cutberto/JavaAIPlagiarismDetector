@@ -4,8 +4,9 @@ import re
 TOKEN_TYPES = [
     ('COMMENT_SINGLE', r'//.*'),
     ('COMMENT_MULTI', r'\/\*(.|[\r\n])*?\*\/'),
-    ('KEYWORD', r'class|if|else|while|for'),
     ('IMPORT', r'import\s+[a-zA-Z_][a-zA-Z0-9_\.]*;'),
+    ('KEYWORD', r'\b(?:abstract|assert|break|case|catch|class|const|continue|default|do|else|enum|exports|extends|final|finally|for|if|implements|instanceof|interface|module|native|new|open|opens|package|private|protected|provides|public|requires|return|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|exports|volatile|while|with)\b'),
+    ('DATA_TYPE', r'\b(?:boolean|byte|char|double|float|int|long|short|void)\b'),
     ('SYSTEM_CALL', r'System[a-zA-Z_\.][a-zA-Z0-9_\.]*'),
     ('METHOD_CALL', r'(\.[\s\n\r]*[\w]+)[\s\n\r]*(?=\(.*\))'),
     ('IDENTIFIER', r'[a-zA-Z_][a-zA-Z0-9_]*'),
