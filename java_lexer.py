@@ -107,3 +107,6 @@ tokens = lexer.tokenize()
 # Imprimir el resultado
 for token in tokens:
     print(token.type + ':', token.value)
+
+# Documentacion: https://interactivechaos.com/en/python/function/redotall
+# Probar regex: https://regexr.com/
