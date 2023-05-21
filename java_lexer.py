@@ -9,14 +9,14 @@ TOKEN_TYPES = [
     ('DATA_TYPE', r'\b(?:boolean|byte|char|double|float|int|long|short|void)\b'),
     ('SYSTEM_CALL', r'System[a-zA-Z_\.][a-zA-Z0-9_\.]*'),
     ('METHOD_CALL', r'(\.[\s\n\r]*[\w]+)[\s\n\r]*(?=\(.*\))'),
+    ('NULL', r'null'),
+    ('BOOLEAN', r'true|false'),
     ('IDENTIFIER', r'[a-zA-Z_][a-zA-Z0-9_]*'),
     ('NUMBER', r'\d+(\.\d+)?'),
     ('STRING', r'"([^"\\]|\\.)*"'),
-    ('OPERATOR', r'\+|\-|\*|/|%|=|==|!=|>|<|>=|<='),
+    ('OPERATOR', r'\!=|[++]|[--]|\-|[+=]|-=|[*=]|/=|%=|&=|[|=]|>>=|<<=|\*|/|%|=|==|>=|<=|>|<|!|&&|[||]|^=|[+]'),
     ('PUNCTUATION', r'\{|\}|\(|\)|\[|\]|\;|\,|\.'),
    # ('COMMENT_SINGLE', r'(?<=\n)//.*'),
-    ('BOOLEAN', r'true|false'),
-    ('NULL', r'null'),
     
 
 ]
