@@ -96,3 +96,30 @@ public class TrueFalseExample {
     }
 }
 """
+
+SOURCE_CODE4 = """
+public class TrueFalseExcercise {
+    public static void main(String[] args) {
+
+        // Utilizando los valores booleanos en condiciones
+        if (isTrue) {
+            System.out.println("Esta condición es verdadera.");
+        }
+
+        elif (!isFalse) {
+            System.out.println("Esta condición es verdadera.");
+        }
+
+        // Utilizando los valores booleanos en operaciones booleanas
+        boolean isTrue = true;
+        boolean isFalse = false;
+        boolean result1 = isTrue && isFalse;
+        boolean result2 = isTrue || isFalse;
+        boolean result3 = !isFalse;
+
+        System.out.println(" 1: " + result1);
+        System.out.println(" 3: " + result3);
+        System.out.println(" 2: " + result2);
+    }
+}
+""" 
