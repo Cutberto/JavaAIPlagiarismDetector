@@ -31,7 +31,7 @@ class Token:
 
 #clase lexer, cuenta con codigo fuente, posición y tokens analizados 
 class Lexer:
-    def __init__(self, source_code):
+    def __init__(self, source_code=""):
         self.source_code = source_code
         self.position = 0
         self.lineposition = 0
@@ -63,6 +63,41 @@ class Lexer:
                     self.position += 1
                     self.lineposition += 1
                 elif self.source_code[self.position] in ['\n', '\r', "\r\n" ]:
+                    # ignorar salto de linea y cambiar de linea
+                    self.position += 1
+                    self.line += 1
+                    self.lineposition = 0
+                else:
+                    # error por caracter erroneo 
+                    print ('Unexpected character trying '+ token_type+ ' at line '+ str(self.line) + " position: " + str(self.lineposition) + " char: " + self.source_code[self.position])
+                    #self.position +=1
+                    raise Exception('Unexpected character trying '+ token_type+ ' at line '+ str(self.line) + " position: " + str(self.lineposition) + " char: " + self.source_code[self.position])
+
+        return self.tokens
+    
+    def tokenize_code(self, source_code):
+        while self.position < len(source_code):
+            match = None
+            for token_type, pattern in TOKEN_TYPES:
+                regex = re.compile(pattern)
+                match = regex.match(source_code, self.position)
+                if match:
+                    #recupera el valor del token de la instancia re.match
+                    value = match.group(0)
+                    #crea un objeto token 
+                    token = Token(token_type, value)
+                    #lo almacena en la clase lexer
+                    if token.type != "WHITESPACE" : self.tokens.append(token)
+                    #el lexer avanza a la posición del source code donde termina el match
+                    self.position = match.end(0)
+                    break
+            if not match:
+                #si no hay match, se revisa si fue por un error o por un caracter que se puede ignorar
+                if source_code[self.position] in [' ']:
+                    # ignorar whitespace 
+                    self.position += 1
+                    self.lineposition += 1
+                elif source_code[self.position] in ['\n', '\r', "\r\n" ]:
                     # ignorar salto de linea y cambiar de linea
                     self.position += 1
                     self.line += 1
