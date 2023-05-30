@@ -11,11 +11,13 @@ TOKEN_TYPES = [
     ('METHOD_CALL', r'(\.[\s\n\r]*[\w]+)[\s\n\r]*(?=\(.*\))'),
     ('NULL', r'null'),
     ('BOOLEAN', r'true|false'),
-    ('IDENTIFIER', r'[a-zA-Z_][a-zA-Z0-9_]*'),
     ('NUMBER', r'\d+(\.\d+)?'),
+    ('IDENTIFIER', r'[a-zA-Z_][a-zA-Z0-9_]*'),
     ('STRING', r'"([^"\\]|\\.)*"'),
-    ('OPERATOR', r'\!=|[++]|[--]|\-|[+=]|-=|[*=]|/=|%=|&=|[|=]|>>=|<<=|\*|/|%|=|==|>=|<=|>|<|!|&&|[||]|^=|[+]'),
-    ('PUNCTUATION', r'\{|\}|\(|\)|\[|\]|\;|\,|\.'),
+    ('STRING2', r'\'([^"\\]|\\.)*\''),
+    ('OPERATOR', r'\!=|[++]|[--]|\-|[+=]|-=|[*=]|/=|%=|&=|[|=]|>>=|<<=|\*|/|%|=|==|>=|<=|>|<|!|&&|[||]|^=|[+]|\?|\:|\&|\@|\^|\~'),
+    ('PUNCTUATION', r'\{|\}|\(|\)|\[|\]|\;|\,|\.|:|\\'),
+    ('WHITESPACE', r'\s'),
    # ('COMMENT_SINGLE', r'(?<=\n)//.*'),
     
 
@@ -50,7 +52,7 @@ class Lexer:
                     #crea un objeto token 
                     token = Token(token_type, value)
                     #lo almacena en la clase lexer
-                    self.tokens.append(token)
+                    if token.type != "WHITESPACE" : self.tokens.append(token)
                     #el lexer avanza a la posición del source code donde termina el match
                     self.position = match.end(0)
                     break
@@ -60,54 +62,19 @@ class Lexer:
                     # ignorar whitespace 
                     self.position += 1
                     self.lineposition += 1
-                elif self.source_code[self.position] in ['\n', '\r']:
+                elif self.source_code[self.position] in ['\n', '\r', "\r\n" ]:
                     # ignorar salto de linea y cambiar de linea
                     self.position += 1
                     self.line += 1
                     self.lineposition = 0
                 else:
                     # error por caracter erroneo 
+                    print ('Unexpected character trying '+ token_type+ ' at line '+ str(self.line) + " position: " + str(self.lineposition) + " char: " + self.source_code[self.position])
+                    #self.position +=1
                     raise Exception('Unexpected character trying '+ token_type+ ' at line '+ str(self.line) + " position: " + str(self.lineposition) + " char: " + self.source_code[self.position])
 
         return self.tokens
 
-# Código de java para pruebas 
-source_code = """
-import java.util.ArrayList;
-import java.util.List;
-
-// This is a single-line comment
-class HelloWorld {
-    public static void main(String[] args) {
-        /* This is a
-           multi-line comment */
-        boolean flag = true;
-        String message = "Hello, World!";
-        int number = 123;
-        double pi = 3.14;
-        int[] array = {1, 2, 3};
-        if (flag == true) {
-            System.out.println(message);
-        }
-        else {
-            System.out.println("Flag is false.");
-        }
-    }
-}
-
-"""
-
-# Validar si vale la pena quitar los comentarios o dejarlos, en base a los papers
-#source_code = re.sub(r'/\*.*?\*/', '', source_code, flags=re.DOTALL)
-print(source_code)
-
-# Mandar a llamar el lexer
-lexer = Lexer(source_code)
-tokens = lexer.tokenize()
-
-# Imprimir el resultado
-for token in tokens:
-    print(token.type + ':', token.value)
 
 # Documentacion: https://interactivechaos.com/en/python/function/redotall
 # Probar regex: https://regexr.com/
