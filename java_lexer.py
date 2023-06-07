@@ -5,10 +5,11 @@ TOKEN_TYPES = [
     ('COMMENT_SINGLE', r'//.*'),
     ('COMMENT_MULTI', r'\/\*(.|[\r\n])*?\*\/'),
     ('IMPORT', r'import\s+[a-zA-Z_][a-zA-Z0-9_\.]*;'),
-    ('KEYWORD', r'\b(?:abstract|assert|break|case|catch|class|const|continue|default|do|else|enum|exports|extends|final|finally|for|if|implements|instanceof|interface|module|native|new|open|opens|package|private|protected|provides|public|requires|return|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|exports|volatile|while|with)\b'),
+    ('KEYWORD', r'\b(?:while|for)\b'),
+    ('KEYWORD', r'\b(?:abstract|assert|break|case|catch|class|const|continue|default|do|else|enum|exports|extends|final|finally|if|implements|instanceof|interface|module|native|new|open|opens|package|private|protected|provides|public|requires|return|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|exports|volatile|with)\b'),
     ('DATA_TYPE', r'\b(?:boolean|byte|char|double|float|int|long|short|void)\b'),
     ('SYSTEM_CALL', r'System[a-zA-Z_\.][a-zA-Z0-9_\.]*'),
-    ('METHOD_CALL', r'(\.[\s\n\r]*[\w]+)[\s\n\r]*(?=\(.*\))'),
+    ('METHOD_CALL', r'(\.[\s\n\r]*[\w]+)[\s\n\r]*(\?=\(.*\))'),
     ('NULL', r'null'),
     ('BOOLEAN', r'true|false'),
     ('NUMBER', r'\d+(\.\d+)?'),
@@ -18,9 +19,6 @@ TOKEN_TYPES = [
     ('OPERATOR', r'\!=|[++]|[--]|\-|[+=]|-=|[*=]|/=|%=|&=|[|=]|>>=|<<=|\*|/|%|=|==|>=|<=|>|<|!|&&|[||]|^=|[+]|\?|\:|\&|\@|\^|\~'),
     ('PUNCTUATION', r'\{|\}|\(|\)|\[|\]|\;|\,|\.|:|\\'),
     ('WHITESPACE', r'\s'),
-   # ('COMMENT_SINGLE', r'(?<=\n)//.*'),
-    
-
 ]
 
 # Clase token, cuenta con tipo y valor
@@ -50,6 +48,7 @@ class Lexer:
                     #recupera el valor del token de la instancia re.match
                     value = match.group(0)
                     #crea un objeto token 
+                    
                     token = Token(token_type, value)
                     #lo almacena en la clase lexer
                     if token.type != "WHITESPACE" : self.tokens.append(token)
@@ -76,6 +75,7 @@ class Lexer:
         return self.tokens
     
     def tokenize_code(self, source_code):
+        self.tokens = []
         while self.position < len(source_code):
             match = None
             for token_type, pattern in TOKEN_TYPES:
@@ -86,8 +86,13 @@ class Lexer:
                     value = match.group(0)
                     #crea un objeto token 
                     token = Token(token_type, value)
+
+                    #Si el tipo de token corresponde a uno sensible a ofuscación, se elimina su valor y se deja solo el tipo de token
+                    if token.type in ["NUMBER", "IDENTIFIER","STRING","STRING2", "COMMENT_SINGLE", "COMMENT_MULTI"]:
+                        token.value = ""
+                    
                     #lo almacena en la clase lexer
-                    if token.type != "WHITESPACE" : self.tokens.append(token)
+                    if token.type not in ["WHITESPACE", "COMMENT_SINGLE", "COMMENT_MULTI"] : self.tokens.append(token)
                     #el lexer avanza a la posición del source code donde termina el match
                     self.position = match.end(0)
                     break
@@ -109,7 +114,13 @@ class Lexer:
                     raise Exception('Unexpected character trying '+ token_type+ ' at line '+ str(self.line) + " position: " + str(self.lineposition) + " char: " + self.source_code[self.position])
 
         return self.tokens
+    
+    def get_token_string(self, code):
+        
+        self.tokens = self.tokenize_code(code)
+        token_string = ""
+        for token in self.tokens:
+            token_string += token.type + " " + token.value + " "
+        return token_string
 
 
-# Documentacion: https://interactivechaos.com/en/python/function/redotall
-# Probar regex: https://regexr.com/
