@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Text Comparison</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <style>
+      body {
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="center-align">Text Comparison</h1>
+    <div class="row">
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s6">
+            <textarea id="text1" class="materialize-textarea"></textarea>
+            <label for="text1">Text 1</label>
+          </div>
+          <div class="input-field col s6">
+            <textarea id="text2" class="materialize-textarea"></textarea>
+            <label for="text2">Text 2</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12 center-align">
+            <button
+              id="compareButton"
+              class="btn waves-effect waves-light"
+              type="button"
+            >
+              Compare
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            <h4 class="center-align">Result:</h4>
+            <div class="progress">
+              <div id="progressBar" class="determinate" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
