@@ -29,7 +29,7 @@
     </style>
   </head>
   <body>
-    <h1 class="center-align">Text Comparison</h1>
+    <h1 class="center-align">Java Code Comparison</h1>
 
     <div class="row">
       <div class="input-field col s12">
@@ -37,10 +37,13 @@
           <option value="" disabled selected>
             Please select a plagium detection model
           </option>
-          <option value="http://127.0.0.1:5000/tfidf">TD-IDF</option>
           <option value="http://127.0.0.1:5000/transition">
-            Transition Matrix
+            Transition Matrix (Recommended)
           </option>
+          <option value="http://127.0.0.1:5000/lstm">
+            LSTM-ML (experimental)
+          </option>
+          <option value="http://127.0.0.1:5000/tfidf">TD-IDF</option>
         </select>
         <label>Model</label>
       </div>
@@ -51,11 +54,11 @@
         <div class="row">
           <div class="input-field col s6">
             <textarea id="text1" class="materialize-textarea"></textarea>
-            <label for="text1">Text 1</label>
+            <label for="text1">Code 1</label>
           </div>
           <div class="input-field col s6">
             <textarea id="text2" class="materialize-textarea"></textarea>
-            <label for="text2">Text 2</label>
+            <label for="text2">Code 2</label>
           </div>
         </div>
         <div class="row">

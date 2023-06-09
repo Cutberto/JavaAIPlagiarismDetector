@@ -1,23 +1,75 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from java_lexer import Lexer
+import io 
+import json 
+from keras_preprocessing.text import tokenizer_from_json
+import tensorflow as tf
+from tensorflow.keras.layers import *
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+import tensorflow as tf
+import tensorflow_text as text
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import re 
+import numpy as np
+from collections import defaultdict
 
 app = Flask(__name__)
 CORS(app)
 
 def tokenize(code1):
-    lexer1 = Lexer()
-    
+    lexer1 = Lexer()    
     tokens1 = lexer1.get_token_string(code1)
   
     return tokens1
 
 
-import tensorflow as tf
-import tensorflow_text as text
 
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+
+with open('tokenizer.json') as f:
+    data = json.load(f)
+    tokenizer = tokenizer_from_json(data)
+
+
+# Define the maximum sequence length
+max_sequence_length = 100
+
+# Define the inputs
+input1 = Input(shape=(max_sequence_length,))
+input2 = Input(shape=(max_sequence_length,))
+
+# Embedding layer for input1
+embedding_layer = Embedding(len(tokenizer.word_index) + 1, 100, input_length=max_sequence_length)
+embedded_input1 = embedding_layer(input1)
+lstm_output1 = LSTM(128, return_sequences=True)(embedded_input1)
+lstm_output1 = GlobalMaxPooling1D()(lstm_output1)
+
+# Embedding layer for input2
+embedded_input2 = embedding_layer(input2)
+lstm_output2 = LSTM(128, return_sequences=True)(embedded_input2)
+lstm_output2 = GlobalMaxPooling1D()(lstm_output2)
+
+# Concatenate the LSTM outputs
+merged_output = Concatenate()([lstm_output1, lstm_output2])
+
+# Dense layers
+dense_output = Dense(64, activation='relu')(merged_output)
+dense_output = Dropout(0.5)(dense_output)
+
+# Output layer
+output = Dense(1, activation='sigmoid')(dense_output)
+
+# Define the model
+model_lstm = Model(inputs=[input1, input2], outputs=output)
+
+# Compile the model
+model_lstm.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.001), metrics=['accuracy'])
+
+model_lstm.load_weights('./LSTM_Model/balanced_model')
+
 
 def compare_tokens_tfidf(tokens1, tokens2, plagium_value):
     print(tokens1,"\n",tokens2)
@@ -32,9 +84,7 @@ def compare_tokens_tfidf(tokens1, tokens2, plagium_value):
     similarity = cosine_similarity(tfidf_matrix[0], tfidf_matrix[1])
     return similarity[0][0]
 
-import re 
-import numpy as np
-from collections import defaultdict
+
 def calculate_transition_matrix(text):
     # Eliminar caracteres no alfanuméricos y convertir a minúsculas
     text = re.sub(r'[^a-zA-Z0-9\s]', '', text.lower())
@@ -132,5 +182,51 @@ def compare_texts_transition():
     result = compare_tokens_transition_matrix(text1,text2,0.999) 
     
     return jsonify({'value': result})
+
+@app.route("/rougel", methods = ["POST"])
+def compare_code_rouge_l():
+
+    text1 = request.json['text1']
+    text2 = request.json['text2']
+    text1 = tokenize(text1)
+    text2 = tokenize(text2)
+    
+    tokenizer = text.WhitespaceTokenizer()
+
+    # Tokenize code A and code B
+    code_A = tokenizer.tokenize([text1])
+    code_B = tokenizer.tokenize([text2])
+
+    # Compute Rouge-L
+    result = text.metrics.rouge_l(code_A, code_B)
+    return jsonify({'value': result.f_measure[0].item()})
+
+
+
+@app.route('/lstm', methods=['POST'])
+def compare_texts_lstm():
+    with open('tokenizer.json') as f:
+        data = json.load(f)
+        tokenizer = tokenizer_from_json(data)
+
+    text1 = request.json['text1']
+    text2 = request.json['text2']
+    text1 = tokenize(text1)
+    text2 = tokenize(text2)
+    
+    X_sequences_firstcode = tokenizer.texts_to_sequences(text1)
+    X_sequences_secondcode = tokenizer.texts_to_sequences(text2)
+
+
+    # Pad sequences to ensure uniform length
+    X_padded_firstcode = pad_sequences(X_sequences_firstcode, maxlen=max_sequence_length, padding='post')
+    X_padded_secondcode = pad_sequences(X_sequences_secondcode, maxlen=max_sequence_length, padding='post')
+
+    result = model_lstm.predict([X_padded_firstcode, X_padded_secondcode])
+    print(result[0][0])
+
+    
+    return jsonify({'value': result[0][0].item()})
+
 if __name__ == '__main__':
     app.run()
