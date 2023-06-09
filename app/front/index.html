@@ -10,10 +10,40 @@
       body {
         padding: 20px;
       }
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 9999;
+      }
+      .loading-overlay .preloader-wrapper {
+        width: 64px;
+        height: 64px;
+      }
     </style>
   </head>
   <body>
     <h1 class="center-align">Text Comparison</h1>
+
+    <div class="row">
+      <div class="input-field col s12">
+        <select id="backendSelect">
+          <option value="" disabled selected>
+            Please select a plagium detection model
+          </option>
+          <option value="http://127.0.0.1:5000/tfidf">TD-IDF</option>
+          <option value="http://127.0.0.1:5000/rougel">Rouge-L</option>
+        </select>
+        <label>Model</label>
+      </div>
+    </div>
+
     <div class="row">
       <form class="col s12">
         <div class="row">
@@ -37,15 +67,31 @@
             </button>
           </div>
         </div>
-        <div class="row">
+        <div class="row hide" id="resultSection">
           <div class="col s12">
-            <h4 class="center-align">Result:</h4>
+            <h4 id="resultLabel" class="center-align"></h4>
             <div class="progress">
               <div id="progressBar" class="determinate" style="width: 0%"></div>
             </div>
           </div>
         </div>
       </form>
+    </div>
+
+    <div class="loading-overlay hide" id="loadingOverlay">
+      <div class="preloader-wrapper active">
+        <div class="spinner-layer spinner-blue-only">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div>
+          <div class="gap-patch">
+            <div class="circle"></div>
+          </div>
+          <div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
