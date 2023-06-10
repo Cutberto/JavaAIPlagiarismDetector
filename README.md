@@ -13,25 +13,13 @@ El proceso de detección de plagio consta de los siguientes pasos:
 
 3. **Comparación de similitud**: Se utiliza un modelo de procesamiento de lenguaje natural para calcular la similitud entre las representaciones vectoriales de los códigos fuente. Esto permite determinar qué tan similares son los códigos analizados.
 
-4. **Generación de reporte**: POR DEFINIR
-
-## Requisitos
-
-Para utilizar este proyecto, se requiere tener instalado lo siguiente:
-
-- Python 3.x: El tokenizador y los modelos de procesamiento de lenguaje natural están desarrollados en Python. Se recomienda utilizar la versión 3.x del lenguaje.
-
-- Librerías Python: POR DEFINIR 
-- Códigos de Java: Prepara los códigos fuente de Java que deseas analizar y asegúrate de que estén en formato de texto plano.
-
 ## Uso
 
 Sigue los pasos a continuación para utilizar este proyecto:
 
 1. Clona o descarga el repositorio en tu máquina local.
 
-2. Asegúrate de tener todas las dependencias necesarias instaladas ejecutando el comando `pip install -r requirements.txt`.
+2. Abre el notebook del modelo que deseas ejecutar (puedes elegir entre TF-IDF,ROUGE L, MATRICES DE TRANSICION, LSTM Y GPT2)
 
-3. Coloca los códigos fuente de Java que deseas analizar en una carpeta específica dentro del proyecto.
-   
-  Siguientes pasos por Definir 
+3. Si deseas ejecutar el prototipo de aplicación web, entra a la carpeta "app" y ejecuta el archivo "app.py" de la carpeta "back". Después de esto entra a la carpeta front y abre "index.html".
+
